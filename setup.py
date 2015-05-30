@@ -6,7 +6,7 @@ import io
 long_description = io.open('README.md').read()
 
 setup(
-    name='glued',
+    name='arglinker',
     version='0.1.0',
 
     author='Krisztián Fekete',
@@ -15,7 +15,7 @@ setup(
         'py.test like automatic fixture injection'
         + ' for unittest and derivatives'),
     long_description=long_description,
-    url='https://github.com/krisztianfekete/glued',
+    url='https://github.com/krisztianfekete/arglinker',
 
     keywords='unittest fixture injection',
     classifiers=[
@@ -29,5 +29,5 @@ setup(
     ],
     license='Unlicense',
 
-    py_modules=['glued'],
+    py_modules=['arglinker'],
 )

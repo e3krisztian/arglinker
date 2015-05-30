@@ -4,10 +4,9 @@ from __future__ import unicode_literals
 from __future__ import print_function
 
 import unittest
+import arglinker
 
-from glued import glue_test_methods
-
-TestCase = glue_test_methods(unittest.TestCase)
+TestCase = arglinker.add_test_linker(unittest.TestCase)
 
 
 class Test_fixture_evaluation(TestCase):

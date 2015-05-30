@@ -4,24 +4,19 @@
 Enable a py.test like automatic fixture injection with
 
     # unittest
-    TestCase = glue_test_methods(unittest.TestCase)
+    TestCase = arglinker.add_test_linker(unittest.TestCase)
 
 or
 
     # https://github.com/testing-cabal/testtools
-    TestCase = glue_test_methods(testtools.TestCase)
+    TestCase = arglinker.add_test_linker(testtools.TestCase)
 
 and using the returned TestCase for base class for tests.
-Fixtures will automatically stick to the parameter names of
-the test methods of the glued class!
+Fixtures will be automatically passed as the appropriate parameters of
+the test methods of the linked class.
 
 Where fixture `a` is defined as the return value of non-test method `a()`
 of the same TestCase derived class.
-
-----
-
-Motivated by py.test's similar feature, but it is a clean-room implementation
-of the idea.
 
 Author: Krisztián Fekete
 '''
@@ -35,22 +30,22 @@ import functools
 import inspect
 
 
-__all__ = ('glue_test_methods',)
+__all__ = ('add_test_linker',)
 
 
-def call_with_fixtures(testobj, function, fixtures):
+def call_with_fixtures(obj, function, fixtures):
     args = inspect.getargspec(function).args[1:]
     for arg in args:
-        add_fixture(testobj, arg, fixtures)
-    # python2: self must be positional parameter, not keyword parameter!
-    return function(testobj, **dict((arg, fixtures[arg]) for arg in args))
+        add_fixture(obj, arg, fixtures)
+    # python2: `self` must be positional parameter, not keyword parameter
+    return function(obj, **dict((arg, fixtures[arg]) for arg in args))
 
 
-def add_fixture(testobj, arg_name, fixtures):
+def add_fixture(obj, arg_name, fixtures):
     if arg_name in fixtures:
         return
-    create_fixture = getattr(testobj.__class__, arg_name)
-    fixture = call_with_fixtures(testobj, create_fixture, fixtures)
+    create_fixture = getattr(obj.__class__, arg_name)
+    fixture = call_with_fixtures(obj, create_fixture, fixtures)
     fixtures[arg_name] = fixture
 
 
@@ -73,13 +68,12 @@ def func_with_fixture_resolver(f):
     return f_with_fixtures
 
 
-class GlueMeta(type):
-    '''\
-    Metaclass glueing fixtures to parameter names.
+class ArgLinkerMeta(type):
+    '''
+    Metaclass linking fixtures to parameter names.
 
-    This is done by replacing test methods with closure methods
-    that create/resolve fixtures from the given parameter name
-    and call the original test method with the fixtures.
+    Replaces test methods with closure methods that create/resolve fixtures
+    from parameter names and call the original test method with the fixtures.
     '''
 
     def __new__(cls, name, parents, dct):
@@ -93,22 +87,22 @@ class GlueMeta(type):
                 new_dct[obj_name] = obj
 
         return (
-            super(GlueMeta, cls).__new__(cls, name, parents, new_dct))
+            super(ArgLinkerMeta, cls).__new__(cls, name, parents, new_dct))
 
 
-def glue_test_methods(test_case_class):
-    '''\
-    Return an enhanced test case class, that automagically resolves fixtures.
-
-    Test methods can name their fixtures as parameters, which is resolved to
-    return values of methods having the same name as the parameter.
-
-    Non-destructive: returns a new class.
+def add_test_linker(test_case_class):
     '''
-    # create class by instantiating the metaclass (python 2 & 3 compatible!)
-    return GlueMeta(
+    Return a new, enhanced test case class.
+
+    The returned class' test methods resolve fixtures from argument names.
+
+    The fixtures are simply return values of methods having the same name
+    as the parameter.
+    '''
+    # create class by instantiating the metaclass (python 2 & 3 compatible)
+    return ArgLinkerMeta(
         # class name
-        str('Glued_') + test_case_class.__name__,
+        test_case_class.__name__,
         # base classes
         (test_case_class,),
         # newly defined stuff

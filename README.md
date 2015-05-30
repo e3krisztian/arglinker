@@ -1,27 +1,29 @@
-# Glued
+# arglinker
 
-Glued is a [py.test](http://pytest.org/latest/fixture.html) like automatic
-fixture injection for `unittest` and derivatives.
+arglinker is a [py.test](http://pytest.org/latest/fixture.html) like automatic
+fixture injector for `unittest` and derivatives.
 
-Glued works with both Python 2 and 3.
+arglinker works with both Python 2 and 3.
 
-The name comes from its behavior: fixtures will automatically stick to the
-parameter names of the test methods of the glued class.
+At runtime a test method will be called with arguments that are the return
+values of respectively named *fixture methods*.
+
+Fixture methods are normal methods without the `test` prefix, they can have
+arguments, which are recursively resolved when used as argument fixture.
 
 
 ## Usage
 
-from [glued's test](https://github.com/krisztianfekete/glued/blob/master/test_glued.py):
+from [arglinker's test](https://github.com/krisztianfekete/arglinker/blob/master/test_arglinker.py):
 
 Enable fixture injection by using the returned class of the
-`glue_test_methods` function as `TestCase`:
+`add_test_linker` function as `TestCase`:
 
 ```python
 import unittest
+import arglinker
 
-from glued import glue_test_methods
-
-TestCase = glue_test_methods(unittest.TestCase)
+TestCase = arglinker.add_test_linker(unittest.TestCase)
 ```
 
 we can now define fixtures as methods of the class, and other methods
@@ -74,8 +76,21 @@ class Test_fixture_sharing(TestCase):
         self.assertIs(value, implicit_value)
 ```
 
+
+## How does it work?
+
+Test methods are replaced with an enhanced argumentless version of the method,
+that calls the *fixture methods* and calls the original method with the
+appropriate fixtures.
+
+Stdlib's introspection module `inspect` gives access to argument names and
+a metaclass does the method replacing at class definition time.
+
+The implementation fits on a page, read it!
+
+
 ----
 
 For more complete experience, I recommend using it together with
- - [testtools](https://pypi.python.org/pypi/testtools)'s `TestCase`
+ - [testtools](https://pypi.python.org/pypi/testtools)'s enhanced `TestCase`
  - [fixtures](https://pypi.python.org/pypi/fixtures)

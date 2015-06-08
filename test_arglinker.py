@@ -81,5 +81,40 @@ class Test_invalid_tests_and_fixtures(TestCase):
         pass
 
 
+class Test_unittest_test_decorators(TestCase):
+
+    # fixtures
+    def dummy_fixture(self):
+        return 'Dummy'
+
+    def bad_fixture(self):
+        raise IOError('failure in fixture')
+
+    # tests
+    @unittest.skip('skipped')
+    def test_skip(self, dummy_fixture):
+        self.fail('not skipped')
+
+    @unittest.skipIf(True, "unconditionally skipped")
+    def test_skipIf(self, dummy_fixture):
+        self.fail('not skipped')
+
+    @unittest.expectedFailure
+    def test_expectedFailure(self, dummy_fixture):
+        self.fail('this should be an x failure not an F failure')
+
+    @unittest.skip('skipped')
+    def test_skip_bad(self, bad_fixture):
+        self.fail('not skipped')
+
+    @unittest.skipIf(True, "unconditionally skipped")
+    def test_skipIf_bad(self, bad_fixture):
+        self.fail('not skipped')
+
+    @unittest.expectedFailure
+    def test_expectedFailure_bad(self, bad_fixture):
+        self.fail('this should be an x failure not an F failure')
+
+
 if __name__ == '__main__':
     unittest.main()

@@ -6,16 +6,11 @@ Enable a py.test like automatic fixture injection with
     # unittest
     TestCase = arglinker.add_test_linker(unittest.TestCase)
 
-or
-
-    # https://github.com/testing-cabal/testtools
-    TestCase = arglinker.add_test_linker(testtools.TestCase)
-
 and using the returned TestCase for base class for tests.
 Fixtures will be automatically passed as the appropriate parameters of
 the test methods of the linked class.
 
-Where fixture `a` is defined as the return value of non-test method `a()`
+Fixture `a` is defined as the return value of non-test method `a()`
 of the same TestCase derived class.
 
 Author: Krisztián Fekete

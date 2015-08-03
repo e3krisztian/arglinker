@@ -10,7 +10,7 @@ setup(
     version='0.1.0',
 
     author='Krisztián Fekete',
-    author_email='krisztian.fekete@gmail.com',
+    author_email='fekete.krisztyan@gmail.com',
     description=(
         'py.test like automatic fixture injection'
         + ' for unittest and derivatives'),

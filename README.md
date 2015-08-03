@@ -1,9 +1,9 @@
 # arglinker
 
-arglinker is a [py.test](http://pytest.org/latest/fixture.html) like automatic
+`arglinker` is a [py.test](http://pytest.org/latest/fixture.html) like automatic
 fixture injector for `unittest` and derivatives.
 
-arglinker works with both Python 2 and 3.
+`arglinker` works with both Python 2 and 3.
 
 At runtime a test method will be called with arguments that are the return
 values of respectively named *fixture methods*.
@@ -86,11 +86,5 @@ appropriate fixtures.
 Stdlib's introspection module `inspect` gives access to argument names and
 a metaclass does the method replacing at class definition time.
 
-The implementation fits on a page, read it!
-
-
-----
-
-For more complete experience, I recommend using it together with
- - [testtools](https://pypi.python.org/pypi/testtools)'s enhanced `TestCase`
- - [fixtures](https://pypi.python.org/pypi/fixtures)
+The implementation fits on a page and although uses advanced Python constructs,
+it is relatively simple - take a look!
